@@ -36,6 +36,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.otto.Subscribe;
@@ -46,6 +47,7 @@ import org.hisp.dhis.android.dashboard.api.models.UserAccount;
 import org.hisp.dhis.android.dashboard.api.models.meta.Credentials;
 import org.hisp.dhis.android.dashboard.api.models.meta.ResponseHolder;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,6 +55,7 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
+import static android.widget.Toast.LENGTH_SHORT;
 import static org.hisp.dhis.android.dashboard.utils.TextUtils.isEmpty;
 
 public class LoginActivity extends BaseActivity {
@@ -116,6 +119,11 @@ public class LoginActivity extends BaseActivity {
     @OnClick(R.id.log_in_button)
     @SuppressWarnings("unused")
     public void logIn() {
+        if(!NetworkUtils.checkConnection(getApplicationContext()))
+        {
+            showMessage(R.string.no_network_connection);
+            return;
+        }
         showProgress(true);
 
         String serverUrl = mServerUrl.getText().toString();

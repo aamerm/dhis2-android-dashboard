@@ -40,6 +40,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
@@ -59,6 +60,7 @@ import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.ui.adapters.DashboardAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,6 +69,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 public class DashboardViewPagerFragment extends BaseFragment
         implements LoaderCallbacks<List<Dashboard>>, View.OnClickListener,
@@ -230,7 +234,12 @@ public class DashboardViewPagerFragment extends BaseFragment
                 return true;
             }
             case R.id.refresh: {
-                syncDashboards();
+                if(!NetworkUtils.checkConnection(getActivity())){
+                    Toast.makeText(
+                            getActivity(), R.string.no_network_connection, LENGTH_SHORT).show();
+                }
+                else
+                    syncDashboards();
                 return true;
             }
             case R.id.add_dashboard: {

@@ -26,6 +26,10 @@
 
 package org.hisp.dhis.android.dashboard.api.utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.hisp.dhis.android.dashboard.api.network.APIException;
@@ -145,5 +149,27 @@ public class NetworkUtils {
                 throw apiException;
             }
         }
+    }
+
+    public static boolean isConnectedWifi(Context context){
+        NetworkInfo info = NetworkUtils.getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI);
+    }
+
+    public static NetworkInfo getNetworkInfo(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo();
+    }
+
+    public static boolean checkConnection(Context context) {
+        ConnectivityManager cManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo networkInfo = cManager.getActiveNetworkInfo();
+        if (networkInfo == null || !networkInfo.isConnected()
+                || !networkInfo.isAvailable()) {
+            return false;
+        }
+        return true;
     }
 }

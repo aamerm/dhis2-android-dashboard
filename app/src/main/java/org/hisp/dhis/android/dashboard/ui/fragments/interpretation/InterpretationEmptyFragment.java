@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -15,11 +16,14 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * Created by arazabishov on 7/24/15.
@@ -89,7 +93,12 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh: {
-                syncInterpretations();
+                if(!NetworkUtils.checkConnection(getActivity())){
+                    Toast.makeText(
+                            getActivity(), R.string.no_network_connection, LENGTH_SHORT).show();
+                }
+                else
+                    syncInterpretations();
                 return true;
             }
         }
