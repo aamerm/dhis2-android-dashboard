@@ -62,6 +62,7 @@ import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.DbLoader.TrackedTable;
 import org.hisp.dhis.android.dashboard.api.persistence.loaders.Query;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 import org.hisp.dhis.android.dashboard.ui.activities.DashboardElementDetailActivity;
 import org.hisp.dhis.android.dashboard.ui.activities.InterpretationCommentsActivity;
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter;
@@ -76,6 +77,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -124,17 +127,26 @@ public final class InterpretationFragment extends BaseFragment
         mToolbar.setNavigationIcon(R.mipmap.ic_menu);
         mToolbar.setTitle(R.string.interpretations);
         mToolbar.inflateMenu(R.menu.menu_interpretations_fragment);
+        if(!NetworkUtils.checkConnection(getActivity())) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.refresh) {
-                    syncInterpretations();
+                    if(!NetworkUtils.checkConnection(getActivity())){
+                        Toast.makeText(
+                                getActivity(), R.string.no_network_connection, LENGTH_SHORT).show();
+                    }else {
+                        syncInterpretations();
+                    }
                     return true;
                 }
 
                 return false;
             }
         });
+
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -68,12 +68,15 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
             syncInterpretations();
         }
 
+
         boolean isLoading = isDhisServiceBound() &&
                 getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
-        if ((savedInstanceState != null &&
-                savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
+        if ((savedInstanceState != null && savedInstanceState.getBoolean(IS_LOADING))  || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+        if(!NetworkUtils.checkConnection(getActivity())) {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }

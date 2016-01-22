@@ -95,12 +95,14 @@ public final class DbUtils {
             }
 
             // if the last updated field in up to date model is after the same
-            // field in persisted model, it means we need to update it.
-            if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
-                // note, we need to pass database primary id to updated model
-                // in order to avoid creation of new object.
-                newModel.setId(oldModel.getId());
-                ops.add(DbOperation.update(newModel));
+            // field in persisted model, it means we need to update it.+
+            if(oldModel != null && newModel.getLastUpdated() != null && oldModel.getLastUpdated() != null){
+                if (newModel.getLastUpdated().isAfter(oldModel.getLastUpdated())) {
+                    // note, we need to pass database primary id to updated model
+                    // in order to avoid creation of new object.
+                    newModel.setId(oldModel.getId());
+                    ops.add(DbOperation.update(newModel));
+                }
             }
 
             // as we have processed given old (persisted) model,
