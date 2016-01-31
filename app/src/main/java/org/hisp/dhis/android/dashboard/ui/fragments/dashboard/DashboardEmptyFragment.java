@@ -33,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
@@ -41,11 +42,14 @@ import org.hisp.dhis.android.dashboard.R;
 import org.hisp.dhis.android.dashboard.api.job.NetworkJob;
 import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
+import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * @author Araz Abishov <araz.abishov.gsoc@gmail.com>.
@@ -96,11 +100,15 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
         boolean isLoading = isDhisServiceBound() &&
                 getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
-        if ((savedInstanceState != null &&
+        if(!NetworkUtils.checkConnection(getActivity())){
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+        else if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
             mProgressBar.setVisibility(View.INVISIBLE);
+            NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
         }
     }
 
@@ -118,9 +126,16 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
 
     public boolean onMenuItemClicked(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.refresh: {
-                syncDashboards();
-                return true;
+                if(!NetworkUtils.checkConnection(getActivity())){
+                    Toast.makeText(
+                            getActivity(), R.string.no_network_connection, LENGTH_SHORT).show();
+                }
+                else {
+                    syncDashboards();
+                    return true;
+                }
             }
             case R.id.add_dashboard: {
                 new DashboardAddFragment()
@@ -143,6 +158,9 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            if(NetworkUtils.checkConnection(getActivity())){
+                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+            }
         }
     }
 }

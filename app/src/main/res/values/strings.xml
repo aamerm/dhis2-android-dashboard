@@ -38,6 +38,7 @@
 
     <!-- START Toast Messages -->
     <string name="no_network_connection">No network connection</string>
+    <string name="sync_successfully_completed">Sync successfully completed</string>
     <string name="bad_response">Bad server response</string>
     <string name="wrong_credentials">Wrong username or password</string>
     <string name="wrong_address">Wrong server address</string>

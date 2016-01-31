@@ -126,12 +126,16 @@ public class DashboardViewPagerFragment extends BaseFragment
 
         boolean isLoading = isDhisServiceBound() &&
                 getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
-        if ((savedInstanceState != null &&
+
+        if(!NetworkUtils.checkConnection(getActivity())){
+            mProgressBar.setVisibility(View.INVISIBLE);
+        } else if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
             mProgressBar.setVisibility(View.INVISIBLE);
         }
+
     }
 
     @Override
@@ -142,8 +146,7 @@ public class DashboardViewPagerFragment extends BaseFragment
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(IS_LOADING, mProgressBar
-                .getVisibility() == View.VISIBLE);
+        outState.putBoolean(IS_LOADING, mProgressBar.getVisibility() == View.VISIBLE);
         super.onSaveInstanceState(outState);
     }
 
@@ -206,10 +209,14 @@ public class DashboardViewPagerFragment extends BaseFragment
         if (uiEvent.getEventType() == UiEvent.UiEventType.SYNC_DASHBOARDS) {
             boolean isLoading = isDhisServiceBound() &&
                     getDhisService().isJobRunning(DhisService.SYNC_DASHBOARDS);
-            if (isLoading) {
+            if(!NetworkUtils.checkConnection(getActivity())){
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
+            else if (isLoading) {
                 mProgressBar.setVisibility(View.VISIBLE);
             } else {
                 mProgressBar.setVisibility(View.INVISIBLE);
+                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
             }
         }
     }
@@ -271,6 +278,9 @@ public class DashboardViewPagerFragment extends BaseFragment
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            if(NetworkUtils.checkConnection(getActivity())){
+                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+            }
         }
     }
 

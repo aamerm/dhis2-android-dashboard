@@ -68,6 +68,7 @@ import org.hisp.dhis.android.dashboard.ui.activities.InterpretationCommentsActiv
 import org.hisp.dhis.android.dashboard.ui.adapters.InterpretationAdapter;
 import org.hisp.dhis.android.dashboard.ui.events.UiEvent;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.NotificationBuilder;
 import org.hisp.dhis.android.dashboard.ui.views.GridDividerDecoration;
 
 import java.util.Arrays;
@@ -135,8 +136,7 @@ public final class InterpretationFragment extends BaseFragment
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.refresh) {
                     if(!NetworkUtils.checkConnection(getActivity())){
-                        Toast.makeText(
-                                getActivity(), R.string.no_network_connection, LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.no_network_connection, LENGTH_SHORT).show();
                     }else {
                         syncInterpretations();
                     }
@@ -162,7 +162,9 @@ public final class InterpretationFragment extends BaseFragment
 
         boolean isLoading = isDhisServiceBound() &&
                 getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
-        if ((savedInstanceState != null &&
+        if(!NetworkUtils.checkConnection(getActivity())){
+            mProgressBar.setVisibility(View.INVISIBLE);
+        } else if ((savedInstanceState != null &&
                 savedInstanceState.getBoolean(IS_LOADING)) || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
@@ -257,10 +259,13 @@ public final class InterpretationFragment extends BaseFragment
 
                 boolean isLoading = isDhisServiceBound() &&
                         getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
-                if (isLoading) {
+                if(NetworkUtils.checkConnection(getActivity())){
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                } else if (isLoading) {
                     mProgressBar.setVisibility(View.VISIBLE);
                 } else {
                     mProgressBar.setVisibility(View.INVISIBLE);
+                    NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
                 }
             }
         }
@@ -285,6 +290,9 @@ public final class InterpretationFragment extends BaseFragment
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            if(NetworkUtils.checkConnection(getActivity())){
+                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+            }
         }
     }
 
@@ -294,10 +302,13 @@ public final class InterpretationFragment extends BaseFragment
         if (uiEvent.getEventType() == UiEvent.UiEventType.SYNC_INTERPRETATIONS) {
             boolean isLoading = isDhisServiceBound() &&
                     getDhisService().isJobRunning(DhisService.SYNC_INTERPRETATIONS);
-            if (isLoading) {
+            if(!NetworkUtils.checkConnection(getActivity())){
+                mProgressBar.setVisibility(View.INVISIBLE);
+            } else if (isLoading) {
                 mProgressBar.setVisibility(View.VISIBLE);
             } else {
                 mProgressBar.setVisibility(View.INVISIBLE);
+                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
             }
         }
     }
