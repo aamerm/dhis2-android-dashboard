@@ -1,5 +1,6 @@
 package org.hisp.dhis.android.dashboard.ui.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -49,9 +50,15 @@ public final class SettingsFragment extends BaseFragment {
     @OnClick(R.id.delete_and_log_out_button)
     @SuppressWarnings("unused")
     public void onClick() {
-        if (isDhisServiceBound()) {
-            getDhisService().logOutUser();
-        }
+        new ConfirmDialogFragment(getString(R.string.logout_title), getString(R.string.message), getString(R.string.logout_option), getString(R.string.cancel_option), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (isDhisServiceBound()) {
+                    getDhisService().logOutUser();
+                }
+            }
+        }).show(getActivity().getFragmentManager(), getString(R.string.logout_title));
+
     }
 
     @Subscribe

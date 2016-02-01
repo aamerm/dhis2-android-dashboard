@@ -108,4 +108,10 @@
     <string name="email">Email</string>
     <string name="phone_number">Phone number</string>
     <!-- END Account -->
+
+    <string name="logout_title">Logging out</string>
+    <string name="message">Are you sure you want to log out? All your data stored on the device will get lost if you choose to log out.</string>
+    <string name="logout_option">Log out</string>
+    <string name="cancel_option">Cancel</string>
+
 </resources>
