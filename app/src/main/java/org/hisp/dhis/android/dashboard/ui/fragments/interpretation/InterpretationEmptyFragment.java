@@ -18,6 +18,7 @@ import org.hisp.dhis.android.dashboard.api.network.SessionManager;
 import org.hisp.dhis.android.dashboard.api.persistence.preferences.ResourceType;
 import org.hisp.dhis.android.dashboard.api.utils.NetworkUtils;
 import org.hisp.dhis.android.dashboard.ui.fragments.BaseFragment;
+import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.NotificationBuilder;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -75,6 +76,10 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
         }else if((savedInstanceState != null && savedInstanceState.getBoolean(IS_LOADING))  || isLoading) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
+        else {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+        }
 
     }
 
@@ -117,6 +122,7 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
         if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
+            NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
         }
     }
 }
