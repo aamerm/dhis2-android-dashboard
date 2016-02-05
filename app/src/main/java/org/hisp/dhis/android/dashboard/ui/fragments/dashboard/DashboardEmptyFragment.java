@@ -108,7 +108,7 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
             mProgressBar.setVisibility(View.INVISIBLE);
-            NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+            Toast.makeText(getActivity(), R.string.sync_successfully_completed, LENGTH_SHORT).show();
         }
     }
 
@@ -156,10 +156,14 @@ public class DashboardEmptyFragment extends BaseFragment implements View.OnClick
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
-        if (result.getResourceType() == ResourceType.DASHBOARDS) {
+        if (result != null && result.getResponseHolder().getApiException() != null) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            showApiExceptionMessage(result.getResponseHolder().getApiException());
+        }
+        else if (result !=null && result.getResourceType() == ResourceType.DASHBOARDS) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if(NetworkUtils.checkConnection(getActivity())){
-                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+                Toast.makeText(getActivity(), R.string.sync_successfully_completed, LENGTH_SHORT).show();
             }
         }
     }

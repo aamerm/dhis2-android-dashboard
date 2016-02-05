@@ -265,7 +265,7 @@ public final class InterpretationFragment extends BaseFragment
                     mProgressBar.setVisibility(View.VISIBLE);
                 } else {
                     mProgressBar.setVisibility(View.INVISIBLE);
-                    NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+                    Toast.makeText(getActivity(), getString(R.string.sync_successfully_completed), LENGTH_SHORT).show();
                 }
             }
         }
@@ -288,10 +288,14 @@ public final class InterpretationFragment extends BaseFragment
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
-        if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
+        if (result != null && result.getResponseHolder().getApiException() != null) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            showApiExceptionMessage(result.getResponseHolder().getApiException());
+        }
+        else if (result !=null && result.getResourceType() == ResourceType.INTERPRETATIONS) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if(NetworkUtils.checkConnection(getActivity())){
-                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+                Toast.makeText(getActivity(), getString(R.string.sync_successfully_completed), LENGTH_SHORT).show();
             }
         }
     }
@@ -308,7 +312,7 @@ public final class InterpretationFragment extends BaseFragment
                 mProgressBar.setVisibility(View.VISIBLE);
             } else {
                 mProgressBar.setVisibility(View.INVISIBLE);
-                NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+                Toast.makeText(getActivity(), getString(R.string.sync_successfully_completed), LENGTH_SHORT).show();
             }
         }
     }

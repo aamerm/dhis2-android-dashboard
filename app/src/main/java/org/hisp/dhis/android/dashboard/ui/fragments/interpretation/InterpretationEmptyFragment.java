@@ -120,9 +120,13 @@ public class InterpretationEmptyFragment extends BaseFragment implements View.On
     @Subscribe
     @SuppressWarnings("unused")
     public void onResponseReceived(NetworkJob.NetworkJobResult<?> result) {
-        if (result.getResourceType() == ResourceType.INTERPRETATIONS) {
+        if (result != null && result.getResponseHolder().getApiException() != null) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_successfully_completed), "");
+            showApiExceptionMessage(result.getResponseHolder().getApiException());
+        }
+        else if (result !=null && result.getResourceType() == ResourceType.INTERPRETATIONS) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            Toast.makeText(getActivity(), R.string.sync_successfully_completed, LENGTH_SHORT).show();
         }
     }
 }

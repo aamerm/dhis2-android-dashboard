@@ -30,11 +30,17 @@ package org.hisp.dhis.android.dashboard.ui.fragments;
 
 import android.app.Activity;
 import android.support.v4.app.Fragment;
+import android.widget.Toast;
 
 import org.hisp.dhis.android.dashboard.DhisService;
+import org.hisp.dhis.android.dashboard.R;
+import org.hisp.dhis.android.dashboard.api.network.APIException;
 import org.hisp.dhis.android.dashboard.api.utils.EventBusProvider;
 import org.hisp.dhis.android.dashboard.ui.activities.BaseActivity;
 import org.hisp.dhis.android.dashboard.ui.activities.INavigationCallback;
+import org.hisp.dhis.android.dashboard.ui.fragments.dashboard.NotificationBuilder;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 public class BaseFragment extends Fragment {
     INavigationCallback mNavCallback;
@@ -98,5 +104,11 @@ public class BaseFragment extends Fragment {
             throw new UnsupportedOperationException("The fragment must be attached to Activity " +
                     "which extends BaseActivity");
         }
+    }
+
+    protected void showApiExceptionMessage(APIException apiException) {
+        apiException.printStackTrace();
+        NotificationBuilder.fireNotification(getActivity().getBaseContext(), getString(R.string.sync_failed), "");
+        Toast.makeText(getActivity(), getString(R.string.sync_failed), LENGTH_SHORT).show();
     }
 }
